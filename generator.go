@@ -284,6 +284,10 @@ func (g *Generator) info(logInfos ...string) {
 
 // generateQueryFile generate query code and save to file
 func (g *Generator) generateQueryFile() (err error) {
+	if g.OutQueryFile == false {
+		return nil
+	}
+
 	if len(g.Data) == 0 {
 		return nil
 	}
@@ -424,8 +428,13 @@ func (g *Generator) generateSingleQueryFile(data *genInfo) (err error) {
 		return err
 	}
 
-	defer g.info(fmt.Sprintf("generate query file: %s%s%s.gen.go", g.OutPath, string(os.PathSeparator), data.FileName))
-	return g.output(fmt.Sprintf("%s%s%s.gen.go", g.OutPath, string(os.PathSeparator), data.FileName), buf.Bytes())
+	fileSuffix := "gen.go"
+	if strings.TrimSpace(g.FileSuffix) != "" {
+		fileSuffix = g.FileSuffix
+	}
+
+	defer g.info(fmt.Sprintf("generate query file: %s%s%s.%s", g.OutPath, string(os.PathSeparator), data.FileName, fileSuffix))
+	return g.output(fmt.Sprintf("%s%s%s.%s", g.OutPath, string(os.PathSeparator), data.FileName, fileSuffix), buf.Bytes())
 }
 
 // generateQueryUnitTestFile generate unit test file for query
@@ -462,6 +471,10 @@ func (g *Generator) generateQueryUnitTestFile(data *genInfo) (err error) {
 
 // generateModelFile generate model structures and save to file
 func (g *Generator) generateModelFile() error {
+	if g.OutModelFile == false {
+		return nil
+	}
+
 	if len(g.models) == 0 {
 		return nil
 	}
@@ -500,7 +513,12 @@ func (g *Generator) generateModelFile() error {
 				}
 			}
 
-			modelFile := modelOutPath + data.FileName + ".gen.go"
+			fileSuffix := "gen.go"
+			if strings.TrimSpace(g.FileSuffix) != "" {
+				fileSuffix = g.FileSuffix
+			}
+
+			modelFile := modelOutPath + data.FileName + "." + fileSuffix
 			err = g.output(modelFile, buf.Bytes())
 			if err != nil {
 				errChan <- err

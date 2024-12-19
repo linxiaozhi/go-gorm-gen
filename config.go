@@ -30,6 +30,10 @@ const (
 type Config struct {
 	db *gorm.DB // db connection
 
+	OutQueryFile bool
+	OutModelFile bool
+	FileSuffix   string
+
 	OutPath      string // query code path
 	OutFile      string // query code file name, default: gen.go
 	ModelPkgPath string // generated model code's package name
